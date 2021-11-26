@@ -14,6 +14,7 @@ from .ixdat_csv import IxdatCSVReader
 from .biologic import BiologicMPTReader
 from .autolab import NovaASCIIReader
 from .ivium import IviumDatasetReader
+from .gamry import GamryDTAReader
 
 # mass spectrometers
 from .pfeiffer import PVMassSpecReader
@@ -34,4 +35,5 @@ READER_CLASSES = {
     "zilien_tmp": ZilienTMPReader,
     "zilien_spec": ZilienSpectrumReader,
     "EC_MS": EC_MS_CONVERTER,
+    "gamry": GamryDTAReader,
 }
