@@ -14,8 +14,7 @@ def read_mpr_folder(folder, data_dir=None):
         if not file.suffix == ".mpr":
             continue
         meas = Measurement.read(file, reader="biologic")
-        print(meas)
-        print("... was read successfully!\n\n")
+        print(f"read {file.name}")
         if combined_meas:
             combined_meas = combined_meas + meas
         else:

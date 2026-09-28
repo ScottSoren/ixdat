@@ -90,9 +90,10 @@ def main(show=True):
     results["joined"] = meas_p1 + meas_p2
     results["joined_p2_no_spec"] = meas_p1 + meas_p2_no_spec
     results["joined_p1_no_spec"] = meas_p1_no_spec + meas_p2
-    print(len(meas_p3.spectrum_series))  # 0
+    print(f"spectra in 4500-5000 s: {len(meas_p3.spectrum_series)}")  # 0
     results["joined_all"] = meas_p1 + meas_p2 + meas_p3  # order doesn't matter!
-    print(len(results["joined_all"].spectrum_series))  # 4
+    n_joined = len(results["joined_all"].spectrum_series)
+    print(f"spectra in the joined measurement: {n_joined}")  # 4
 
     if show:
         meas_p1.plot()
