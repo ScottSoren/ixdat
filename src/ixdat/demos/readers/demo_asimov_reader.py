@@ -1,64 +1,41 @@
-"""Demo of the Asimov reader. Requires access to the Asimov datasets below."""
+"""Demo of the Asimov reader with an NMR spectrum and a Biologic CV.
+
+The first run opens the normal Asimov login flow.
+"""
 
 import matplotlib.pyplot as plt
 
-from ixdat import Measurement
+from ixdat import Measurement, Spectrum
 
-DATASET_IDS = [
-    "53ca3c5f-cd75-406c-8d99-a51c397988d7",
-    "32d304fa-9439-4e97-801e-26cc59c67d37",
-]
+NMR_SPECTRUM_ID = "300f4dcf-1585-51a6-81bc-f867910efe1a"
+BIOLOGIC_CV_ID = "fbbf4edb-f288-5e85-bed0-e3bc89edc2e5"
 
 
-def load_measurements(data_dir=None):
-    """Return a list of the ECMeasurements read from the Asimov datasets.
+def load_nmr_spectrum(data_dir=None):
+    """Return the permanent NMR spectrum example from Asimov.
 
     `data_dir` is not used. It is there to match the other loaders.
     """
-    return [Measurement.read(dataset_id, reader="asimov") for dataset_id in DATASET_IDS]
+    return Spectrum.read(NMR_SPECTRUM_ID, reader="asimov")
 
 
-EXAMPLES = {"measurements": load_measurements}
+def load_biologic_cv(data_dir=None):
+    """Return the permanent Biologic cyclic voltammetry example from Asimov.
+
+    `data_dir` is not used. It is there to match the other loaders.
+    """
+    return Measurement.read(BIOLOGIC_CV_ID, reader="asimov")
 
 
-def _measurement_label(measurement):
-    asimov_meta = (measurement.metadata or {}).get("asimov", {})
-    return (
-        asimov_meta.get("dataset_label")
-        or asimov_meta.get("dataset_id")
-        or measurement.name
-    )
+EXAMPLES = {"nmr_spectrum": load_nmr_spectrum, "biologic_cv": load_biologic_cv}
 
 
 def main(show=True):
     results = {name: load() for name, load in EXAMPLES.items()}
-    if not show:
-        return results
-    measurements = results["measurements"]
-
-    fig, (ax_ec, ax_cv) = plt.subplots(2, 1, constrained_layout=True)
-    ax_ec_right = ax_ec.twinx()
-
-    line_styles = ("-", "--")
-    for idx, meas in enumerate(measurements):
-        linestyle = line_styles[idx % len(line_styles)]
-        meas.plot(
-            axes=[ax_ec, ax_ec_right],
-            U_color="C0",
-            J_color="C3",
-            linestyle=linestyle,
-        )
-
-    for idx, meas in enumerate(measurements):
-        meas.plot_vs_potential(
-            ax=ax_cv,
-            color=f"C{idx}",
-            linestyle=line_styles[idx % len(line_styles)],
-            label=_measurement_label(meas),
-        )
-    ax_cv.legend()
-
-    plt.show()
+    if show:
+        results["nmr_spectrum"].plot()
+        results["biologic_cv"].plot()
+        plt.show()
     return results
 
 
