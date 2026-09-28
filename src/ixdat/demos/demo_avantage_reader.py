@@ -1,10 +1,27 @@
-"""Sandbox script to aid in development and demo of the Avantage reader"""
+"""Demo of the Avantage XPS reader. Requires the demo data."""
 
-from tools_for_demos import DEMO_DATA_DIR
+from matplotlib import pyplot as plt
+
 from ixdat import Spectrum
+from ixdat.demos import get_demo_data_dir
 
-path_to_file = DEMO_DATA_DIR / "avantage/XPS Survey.avg"
 
-spectrum = Spectrum.read(path_to_file, reader="avantage")
+def load_xps_survey(data_dir=None):
+    """Return an XPS survey Spectrum read from an Avantage .avg file."""
+    root = data_dir or get_demo_data_dir()
+    return Spectrum.read(root / "avantage/XPS Survey.avg", reader="avantage")
 
-spectrum.plot()
+
+EXAMPLES = {"xps_survey": load_xps_survey}
+
+
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    if show:
+        results["xps_survey"].plot()
+        plt.show()
+    return results
+
+
+if __name__ == "__main__":
+    results = main()

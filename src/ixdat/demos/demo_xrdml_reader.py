@@ -1,12 +1,29 @@
-"""Sandbox script to aid in development and demo of the XRDML reader"""
+"""Demo of the XRDML reader. Requires the demo data."""
 
-from tools_for_demos import DEMO_DATA_DIR
+from matplotlib import pyplot as plt
 
 from ixdat import Spectrum
+from ixdat.demos import get_demo_data_dir
 
-path_to_file = DEMO_DATA_DIR / "xrdml/GI-XRD Path 2_1 omega 0p5 step 10s.xrdml"
+
+def load_gi_xrd(data_dir=None):
+    """Return a grazing-incidence XRD Spectrum read from an .xrdml file."""
+    root = data_dir or get_demo_data_dir()
+    return Spectrum.read(
+        root / "xrdml/GI-XRD Path 2_1 omega 0p5 step 10s.xrdml", reader="xrdml"
+    )
 
 
-spectrum = Spectrum.read(path_to_file, reader="xrdml")
+EXAMPLES = {"gi_xrd": load_gi_xrd}
 
-spectrum.plot()
+
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    if show:
+        results["gi_xrd"].plot()
+        plt.show()
+    return results
+
+
+if __name__ == "__main__":
+    results = main()

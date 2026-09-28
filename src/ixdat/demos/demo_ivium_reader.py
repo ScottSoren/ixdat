@@ -1,27 +1,39 @@
-"""For use in development of the ivium reader. Requires access to sample data."""
+"""Demo of the ivium reader. Requires the demo data."""
 
-from tools_for_demos import DEMO_DATA_DIR
-import pandas as pd
+from matplotlib import pyplot as plt
 
 from ixdat import Measurement
+from ixdat.demos import get_demo_data_dir
 from ixdat.techniques import CyclicVoltammogram
 
-path_to_file = DEMO_DATA_DIR / "ivium/ivium_test_dataset"
 
-path_to_single_file = path_to_file.parent / (path_to_file.name + "_1")
-df = pd.read_csv(path_to_single_file, sep=r"\s+", header=1)
+def load_ec(data_dir=None):
+    """Return an ECMeasurement read from a set of ivium files."""
+    root = data_dir or get_demo_data_dir()
+    return Measurement.read(root / "ivium/ivium_test_dataset", reader="ivium")
 
-meas = Measurement.read(path_to_file, reader="ivium")
 
-meas.save()
+def load_cv(data_dir=None):
+    """Return a CyclicVoltammogram read from a set of ivium files."""
+    root = data_dir or get_demo_data_dir()
+    cv = CyclicVoltammogram.read(root / "ivium/ivium_test_dataset", reader="ivium")
+    cv.redefine_cycle(start_potential=0.4, redox=False)
+    return cv
 
-meas.plot_measurement()
 
-meas_cv = CyclicVoltammogram.read(path_to_file, reader="ivium")
+EXAMPLES = {"ec": load_ec, "cv": load_cv}
 
-meas_cv.save()
 
-meas_cv.plot_measurement()
-meas_cv.redefine_cycle(start_potential=0.4, redox=False)
-for i in range(4):
-    meas_cv[i].plot()
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    if show:
+        results["ec"].plot_measurement()
+        results["cv"].plot_measurement()
+        for i in range(4):
+            results["cv"][i].plot()
+        plt.show()
+    return results
+
+
+if __name__ == "__main__":
+    results = main()

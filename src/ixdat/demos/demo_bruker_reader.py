@@ -1,4 +1,4 @@
-"""Demo for the Bruker TopSpin NMR reader.
+"""Demo of the Bruker TopSpin NMR reader.
 
 Reads the vendored 1D 1H NMR experiment under
 ``test_data/bruker/MTBLS1_ADG19007u_162_10`` (MetaboLights MTBLS1 human
@@ -9,68 +9,80 @@ chemical-shift spectrum and the raw FID.
 Requires the optional ``nmrglue`` dependency: ``pip install nmrglue``.
 """
 
-from pathlib import Path
-
 import matplotlib.pyplot as plt
 
 from ixdat import Spectrum
+from ixdat.demos import get_test_data_dir
 from ixdat.readers.bruker import ACQUS_KEYS, PROCS_KEYS
 
-DATA_DIR = (
-    Path(__file__).parent.parent.parent
-    / "test_data"
-    / "bruker"
-    / "MTBLS1_ADG19007u_162_10"
-)
+FOLDER = "bruker/MTBLS1_ADG19007u_162_10"
 
 
-# 1. Read the experiment folder.
-spec = Spectrum.read(DATA_DIR, reader="bruker")
+def load_spectrum(data_dir=None):
+    """Return the processed 1H NMR Spectrum of a Bruker experiment folder."""
+    root = data_dir or get_test_data_dir()
+    return Spectrum.read(root / FOLDER, reader="bruker")
 
-# 2. Print the basics.
-print(f"class       : {type(spec).__name__}")
-print(f"technique   : {spec.technique}")
-print(f"name        : {spec.name}")
-print(f"tstamp      : {spec.tstamp}")
-print(
-    f"x ({spec.xseries.unit_name}) : "
-    f"{spec.x.min():.2f} .. {spec.x.max():.2f}  ({spec.x.size} points)"
-)
-print(f"y           : {spec.y.min():.3g} .. {spec.y.max():.3g}")
-print()
 
-# 3. Print the lifted acquisition + processing parameters.
-md = spec.metadata
-acq_keys = ACQUS_KEYS
-proc_keys = tuple(f"proc_{k}" for k in PROCS_KEYS)
+def load_fid(data_dir=None):
+    """Return the raw FID (time-domain signal) of a Bruker experiment folder."""
+    root = data_dir or get_test_data_dir()
+    return Spectrum.read(root / FOLDER, reader="bruker", processed=False)
 
-print("acquisition parameters (from acqus):")
-for k in acq_keys:
-    if k in md:
-        print(f"  {k:10s} = {md[k]}")
-print()
-print("processing parameters (from procs):")
-for k in proc_keys:
-    if k in md:
-        print(f"  {k:14s} = {md[k]}")
-print()
-print(
-    f"full acqus dict has {len(md['acqus'])} keys; "
-    f"full procs dict has {len(md['procs'])} keys."
-)
 
-# 4. Plot the processed spectrum.
-ax = spec.plot(color="k", linewidth=0.6)
-ax.set_title(
-    f"{spec.name}\n"
-    f"{md.get('NUC1', '?')} NMR, {md.get('PULPROG', '?')}, "
-    f"BF1 = {md.get('BF1', '?')} MHz, "
-    f"NS = {md.get('NS', '?')}, solvent = {md.get('SOLVENT', '?')}"
-)
+EXAMPLES = {"spectrum": load_spectrum, "fid": load_fid}
 
-# 5. Read and plot the raw FID (time-domain signal, not reversed).
-fid = Spectrum.read(DATA_DIR, reader="bruker", processed=False)
-ax_fid = fid.plot(color="k", linewidth=0.6)
-ax_fid.set_title(f"{fid.name} — raw FID")
 
-plt.show()
+def print_summary(spec):
+    """Print the basics and the acquisition and processing parameters of `spec`."""
+    print(f"class       : {type(spec).__name__}")
+    print(f"technique   : {spec.technique}")
+    print(f"name        : {spec.name}")
+    print(f"tstamp      : {spec.tstamp}")
+    print(
+        f"x ({spec.xseries.unit_name}) : "
+        f"{spec.x.min():.2f} .. {spec.x.max():.2f}  ({spec.x.size} points)"
+    )
+    print(f"y           : {spec.y.min():.3g} .. {spec.y.max():.3g}")
+    print()
+
+    md = spec.metadata
+    print("acquisition parameters (from acqus):")
+    for k in ACQUS_KEYS:
+        if k in md:
+            print(f"  {k:10s} = {md[k]}")
+    print()
+    print("processing parameters (from procs):")
+    for k in (f"proc_{k}" for k in PROCS_KEYS):
+        if k in md:
+            print(f"  {k:14s} = {md[k]}")
+    print()
+    print(
+        f"full acqus dict has {len(md['acqus'])} keys; "
+        f"full procs dict has {len(md['procs'])} keys."
+    )
+
+
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    spec = results["spectrum"]
+    fid = results["fid"]
+    print_summary(spec)
+
+    if show:
+        md = spec.metadata
+        ax = spec.plot(color="k", linewidth=0.6)
+        ax.set_title(
+            f"{spec.name}\n"
+            f"{md.get('NUC1', '?')} NMR, {md.get('PULPROG', '?')}, "
+            f"BF1 = {md.get('BF1', '?')} MHz, "
+            f"NS = {md.get('NS', '?')}, solvent = {md.get('SOLVENT', '?')}"
+        )
+        ax_fid = fid.plot(color="k", linewidth=0.6)
+        ax_fid.set_title(f"{fid.name} — raw FID")
+        plt.show()
+    return results
+
+
+if __name__ == "__main__":
+    results = main()

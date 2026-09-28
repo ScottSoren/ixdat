@@ -1,19 +1,44 @@
-from tools_for_demos import DEMO_DATA_DIR
+"""Demo of the nordic .tdms reader. Requires the demo data."""
+
+from matplotlib import pyplot as plt
+
 from ixdat import Measurement
+from ixdat.demos import get_demo_data_dir
 
-data_dir = DEMO_DATA_DIR / "nordic_tdms/24B07_0_Pt"
 
-c1 = Measurement.read(data_dir / "CV_101448_ 1.tdms", reader="nordic")
+def load_single_file(data_dir=None):
+    """Return an ECMeasurement read from a single nordic .tdms file."""
+    root = data_dir or get_demo_data_dir()
+    return Measurement.read(
+        root / "nordic_tdms/24B07_0_Pt/CV_101448_ 1.tdms", reader="nordic"
+    )
 
-c1.plot()
 
-meas = Measurement.read_set(data_dir, reader="nordic", suffix=".tdms")
+def load_cv(data_dir=None):
+    """Return a CyclicVoltammogram combining all the .tdms files in a folder."""
+    root = data_dir or get_demo_data_dir()
+    meas = Measurement.read_set(
+        root / "nordic_tdms/24B07_0_Pt", reader="nordic", suffix=".tdms"
+    )
+    cv = meas.as_cv()
+    cv.redefine_cycle(start_potential=0.4, redox=True)
+    return cv
 
-meas.plot()
 
-cv = meas.as_cv()
-cv.redefine_cycle(start_potential=0.4, redox=True)
+EXAMPLES = {"single_file": load_single_file, "cv": load_cv}
 
-if False:
-    # FIXME AttributeError: module 'matplotlib.cm' has no attribute 'get_cmap'
-    cv[15:30].plot_cycles()
+
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    if show:
+        results["single_file"].plot()
+        results["cv"].plot()
+        if False:
+            # FIXME AttributeError: module 'matplotlib.cm' has no attribute 'get_cmap'
+            results["cv"][15:30].plot_cycles()
+        plt.show()
+    return results
+
+
+if __name__ == "__main__":
+    results = main()

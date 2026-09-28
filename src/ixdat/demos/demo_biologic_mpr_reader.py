@@ -1,29 +1,59 @@
-from tools_for_demos import DEMO_DATA_DIR
+"""Demo of the biologic .mpr reader. Requires the demo data."""
+
+from matplotlib import pyplot as plt
+
 from ixdat import Measurement
+from ixdat.demos import get_demo_data_dir
 
-combined_measurement_list = []
 
-for folder in [
-    "17J04_Pt_isotope_exchange",
-    "22I27_London",
-    "22K14_Tempo",
-]:
+def read_mpr_folder(folder, data_dir=None):
+    """Return an ECMeasurement combining all the .mpr files in a biologic folder."""
+    root = data_dir or get_demo_data_dir()
     combined_meas = None
-    data_dir = DEMO_DATA_DIR / "biologic" / folder
-
-    for file in data_dir.iterdir():
+    for file in sorted((root / "biologic" / folder).iterdir()):
         if not file.suffix == ".mpr":
             continue
         meas = Measurement.read(file, reader="biologic")
         print(meas)
         print("... was read successfully!\n\n")
-        # meas.plot()
         if combined_meas:
             combined_meas = combined_meas + meas
         else:
             combined_meas = meas
+    return combined_meas
 
-    combined_meas.plot()
-    combined_meas.plot(J_name="selector")
 
-    combined_measurement_list.append(combined_meas)
+def load_pt_isotope_exchange(data_dir=None):
+    """Return an ECMeasurement from a Pt isotope exchange experiment."""
+    return read_mpr_folder("17J04_Pt_isotope_exchange", data_dir=data_dir)
+
+
+def load_london(data_dir=None):
+    """Return an ECMeasurement from the 22I27_London folder."""
+    return read_mpr_folder("22I27_London", data_dir=data_dir)
+
+
+def load_tempo(data_dir=None):
+    """Return an ECMeasurement from a TEMPO experiment."""
+    return read_mpr_folder("22K14_Tempo", data_dir=data_dir)
+
+
+EXAMPLES = {
+    "pt_isotope_exchange": load_pt_isotope_exchange,
+    "london": load_london,
+    "tempo": load_tempo,
+}
+
+
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    if show:
+        for meas in results.values():
+            meas.plot()
+            meas.plot(J_name="selector")
+        plt.show()
+    return results
+
+
+if __name__ == "__main__":
+    results = main()

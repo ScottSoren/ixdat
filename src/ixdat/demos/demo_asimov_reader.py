@@ -1,3 +1,5 @@
+"""Demo of the Asimov reader. Requires access to the Asimov datasets below."""
+
 import matplotlib.pyplot as plt
 
 from ixdat import Measurement
@@ -6,6 +8,17 @@ DATASET_IDS = [
     "53ca3c5f-cd75-406c-8d99-a51c397988d7",
     "32d304fa-9439-4e97-801e-26cc59c67d37",
 ]
+
+
+def load_measurements(data_dir=None):
+    """Return a list of the ECMeasurements read from the Asimov datasets.
+
+    `data_dir` is not used. It is there to match the other loaders.
+    """
+    return [Measurement.read(dataset_id, reader="asimov") for dataset_id in DATASET_IDS]
+
+
+EXAMPLES = {"measurements": load_measurements}
 
 
 def _measurement_label(measurement):
@@ -17,10 +30,12 @@ def _measurement_label(measurement):
     )
 
 
-def main():
-    measurements = [
-        Measurement.read(dataset_id, reader="asimov") for dataset_id in DATASET_IDS
-    ]
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    if not show:
+        return results
+    measurements = results["measurements"]
+
     fig, (ax_ec, ax_cv) = plt.subplots(2, 1, constrained_layout=True)
     ax_ec_right = ax_ec.twinx()
 
@@ -44,7 +59,8 @@ def main():
     ax_cv.legend()
 
     plt.show()
+    return results
 
 
 if __name__ == "__main__":
-    main()
+    results = main()

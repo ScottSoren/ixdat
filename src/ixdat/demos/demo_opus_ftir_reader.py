@@ -1,64 +1,76 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Dec  7 16:20:40 2023
+"""Demo of the OPUS FTIR reader combined with biologic EC data.
 
-@author: Søren
+Requires the demo data.
 """
 
-from tools_for_demos import DEMO_DATA_DIR
-from ixdat import Spectrum, Measurement
 from matplotlib import pyplot as plt
 
-plt.close("all")
+from ixdat import Spectrum, Measurement
+from ixdat.demos import get_demo_data_dir
+
+FOLDER = "opus_ftir/dpt_from_Matthew/231205 DME 3% EtOH"
 
 
-data_dir = (
-    DEMO_DATA_DIR
-    / "opus_ftir/dpt_from_Matthew"
-    # Path.home() / "Dropbox/WORKSPACES/PEOPLE_ICL/Matthew/opus_ftir/DPT files for Soren"
-)
+def load_ftir(data_dir=None):
+    """Return an FTIR SpectrumSeries read from a set of OPUS .dpt files."""
+    root = data_dir or get_demo_data_dir()
+    return Spectrum.read(
+        root / FOLDER,
+        time_first="05/12/2023 15:20:33.696 (GMT+0)",  # %d/%m/%Y %H:%M:%S.%f
+        time_last="05/12/2023 17:59:57.725 (GMT+0)",
+        reader="opus_ftir",
+    )
 
 
-ftir = Spectrum.read(
-    data_dir / "231205 DME 3% EtOH",
-    time_first="05/12/2023 15:20:33.696 (GMT+0)",  #  %d/%m/%Y %H:%M:%S.%f  23 chars
-    time_last="05/12/2023 17:59:57.725 (GMT+0)",
-    reader="opus_ftir",
-)
-
-ftir.heat_plot()  # heat plot
-if False:
-    # FIXME: AttributeError: module 'matplotlib.cm' has no attribute 'get_cmap'
-    ftir.plot_waterfall()  # waterfall plot
-ftir.plot(
-    dt=1000,
-    xspan=[1000, 1500],
-    xspan_bg=[1000, 1020],
-    color="k",
-    y_values="n",
-    average=False,
-)  # stacked spectra plot
+def load_ec(data_dir=None):
+    """Return an ohmic-drop corrected ECMeasurement read from biologic files."""
+    root = data_dir or get_demo_data_dir()
+    ec = Measurement.read_set(root / FOLDER, suffix=".mpt", reader="biologic")
+    ec.calibrate(R_Ohm=30)
+    return ec
 
 
-ec = Measurement.read_set(
-    data_dir / "231205 DME 3% EtOH",
-    suffix=".mpt",
-    reader="biologic",
-)
-ec.calibrate(R_Ohm=30)
-ec.plot()
-
-ecftir = ec + ftir
-
-ecftir.plot_measurement()
+def load_ec_ftir(data_dir=None):
+    """Return an EC-FTIR measurement combining the EC data and the FTIR spectra."""
+    return load_ec(data_dir=data_dir) + load_ftir(data_dir=data_dir)
 
 
-ecftir.plot_stacked_spectra(
-    dn=40,
-    xspan=[1050, 1400],
-    xspan_bg=[1050, 1060],
-    scale_factor=1.5,
-    # average=False,  # no averaging
-    average=5,  # average 5 spectra each side
-    # average=True,  # most averaging
-)
+EXAMPLES = {"ftir": load_ftir, "ec": load_ec, "ec_ftir": load_ec_ftir}
+
+
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    if not show:
+        return results
+    ftir = results["ftir"]
+
+    ftir.heat_plot()
+    if False:
+        # FIXME: AttributeError: module 'matplotlib.cm' has no attribute 'get_cmap'
+        ftir.plot_waterfall()
+    ftir.plot(  # stacked spectra plot
+        dt=1000,
+        xspan=[1000, 1500],
+        xspan_bg=[1000, 1020],
+        color="k",
+        y_values="n",
+        average=False,
+    )
+
+    results["ec"].plot()
+    results["ec_ftir"].plot_measurement()
+    results["ec_ftir"].plot_stacked_spectra(
+        dn=40,
+        xspan=[1050, 1400],
+        xspan_bg=[1050, 1060],
+        scale_factor=1.5,
+        # average=False,  # no averaging
+        average=5,  # average 5 spectra each side
+        # average=True,  # most averaging
+    )
+    plt.show()
+    return results
+
+
+if __name__ == "__main__":
+    results = main()

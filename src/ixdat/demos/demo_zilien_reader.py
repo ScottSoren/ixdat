@@ -1,44 +1,74 @@
-"""For use in development of the zilien reader(s). Requires access to sample data."""
+"""Demo of the zilien reader(s). Requires the demo data."""
 
-from tools_for_demos import DEMO_DATA_DIR
+from matplotlib import pyplot as plt
+
 from ixdat import Measurement
+from ixdat.demos import get_demo_data_dir
 from ixdat.techniques import MSMeasurement, ECMeasurement
 
-data_dir = DEMO_DATA_DIR / "zilien_with_ec"
-
-path_to_file = data_dir / "2021-02-01 17_44_12.tsv"
-
-# This imports it with the EC data
-ecms = Measurement.read(path_to_file, reader="zilien")
-ecms.calibrate_RE(0)
-ecms.plot_measurement()
-
-# This imports it as just an MS measurement.
-ms = MSMeasurement.read(path_to_file, reader="zilien")
-ms.plot_measurement()  # nice. one panel, no MS :)
-
-# This adds in the EC data from Biologic:
-
-ec = Measurement.read_set(
-    data_dir / "2021-02-01 17_44_12", reader="biologic", suffix=".mpt"
-)
-ecms_2 = ec + ms
-ecms_2.plot_measurement()
-
-# This imports it as just an EC measurement
-ec_2 = ECMeasurement.read(path_to_file, reader="zilien")
-ec_2.plot()
+FILE_NAME = "zilien_with_ec/2021-02-01 17_44_12.tsv"
 
 
-# This plots just the EC data from the first EC-MS measurement:
+def load_ecms(data_dir=None):
+    """Return an ECMSMeasurement with both the EC and MS data of a zilien file."""
+    root = data_dir or get_demo_data_dir()
+    ecms = Measurement.read(root / FILE_NAME, reader="zilien")
+    ecms.calibrate_RE(0)
+    return ecms
 
-ecms.ec_plotter.plot_measurement()
-ecms.ec_plotter.plot_vs_potential()
-ecms.ms_plotter.plot_measurement()
 
-# This plots it as a cyclic voltammagram
-if False:
-    # FIXME: Measurement.__init__() got an unexpected keyword argument 'spectrum_id'
-    ecms_cv = ecms.as_cv()
-    ecms_cv.ec_plotter.plot_vs_potential()
-    ecms_cv.plot()
+def load_ms(data_dir=None):
+    """Return an MSMeasurement with only the MS data of a zilien file."""
+    root = data_dir or get_demo_data_dir()
+    return MSMeasurement.read(root / FILE_NAME, reader="zilien")
+
+
+def load_ec(data_dir=None):
+    """Return an ECMeasurement with only the EC data of a zilien file."""
+    root = data_dir or get_demo_data_dir()
+    return ECMeasurement.read(root / FILE_NAME, reader="zilien")
+
+
+def load_ecms_biologic(data_dir=None):
+    """Return an ECMSMeasurement combining zilien MS data and biologic EC data."""
+    root = data_dir or get_demo_data_dir()
+    ec = Measurement.read_set(
+        root / "zilien_with_ec/2021-02-01 17_44_12", reader="biologic", suffix=".mpt"
+    )
+    return ec + load_ms(data_dir=data_dir)
+
+
+EXAMPLES = {
+    "ecms": load_ecms,
+    "ms": load_ms,
+    "ec": load_ec,
+    "ecms_biologic": load_ecms_biologic,
+}
+
+
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    if show:
+        ecms = results["ecms"]
+        ecms.plot_measurement()
+        results["ms"].plot_measurement()  # one panel, no EC
+        results["ecms_biologic"].plot_measurement()
+        results["ec"].plot()
+
+        # Plot only the EC or only the MS data of the EC-MS measurement
+        ecms.ec_plotter.plot_measurement()
+        ecms.ec_plotter.plot_vs_potential()
+        ecms.ms_plotter.plot_measurement()
+
+        if False:
+            # FIXME: Measurement.__init__() got an unexpected keyword argument
+            #  'spectrum_id'
+            ecms_cv = ecms.as_cv()
+            ecms_cv.ec_plotter.plot_vs_potential()
+            ecms_cv.plot()
+        plt.show()
+    return results
+
+
+if __name__ == "__main__":
+    results = main()

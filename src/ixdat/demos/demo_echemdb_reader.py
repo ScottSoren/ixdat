@@ -1,61 +1,57 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Aug  4 10:48:47 2025
+"""Demo of the EChemDB reader, comparing a measured CV with an EChemDB reference.
+
+Reads the measured CV from the repository's ``test_data/`` and the reference
+from echemdb.org, so it requires an internet connection.
 
 @author: Søren
 @contributor: Frederik
 """
 
-from pathlib import Path
-from ixdat import Measurement
 import matplotlib.pyplot as plt
 
-# load CV from a Biologic .mpt file and convert to EC technique
-mpt_path = Path(__file__).parent / "../../test_data/biologic/Pt_poly_cv.mpt"
-my_cv = Measurement.read(mpt_path, reader="biologic").as_cv()
+from ixdat import Measurement
+from ixdat.demos import get_test_data_dir
 
-# pull out the 3rd cycle and plot
-my_cycle = my_cv[2]
-fig, ax = plt.subplots(figsize=(6, 4))
-my_cycle.plot(ax=ax, color="C0", label="Measured cycle #3")
+REF_ID = "briega-martos_2021_cation_48_f1Cs_black"
 
-# load reference from EChemDB
-ref_id = "briega-martos_2021_cation_48_f1Cs_black"
-try:
-    ref_cv = Measurement.read(ref_id, reader="echemdb")
-    ref_cycle = ref_cv.as_cv()
-    ref_electrode = ref_cycle.metadata["reference_electrode"]
-    ref_cycle.plot(ax=ax, color="C1", label=f"EchemDB ref vs {ref_electrode}")
 
+def load_measured_cv(data_dir=None):
+    """Return a CyclicVoltammogram read from a biologic .mpt file."""
+    root = data_dir or get_test_data_dir()
+    return Measurement.read(root / "biologic/Pt_poly_cv.mpt", reader="biologic").as_cv()
+
+
+def load_reference_cv(data_dir=None):
+    """Return a reference CyclicVoltammogram from EChemDB, calibrated to RHE.
+
+    `data_dir` is not used. It is there to match the other loaders.
+    """
+    ref_cv = Measurement.read(REF_ID, reader="echemdb").as_cv()
     # Nernst shift SHE to RHE
-    RE_vs_RHE = 0.060 * ref_cycle.metadata["electrolyte"]["ph"]["value"]
-    # shift potential by +0.7 V (arbitrary here)
-    ref_cycle.calibrate(RE_vs_RHE=RE_vs_RHE)
-    ref_cycle.plot(ax=ax, color="C2", label="EchemDB ref vs RHE")
+    ref_cv.calibrate(RE_vs_RHE=0.060 * ref_cv.metadata["electrolyte"]["ph"]["value"])
+    return ref_cv
 
-    # alternatively, also supported
-    # ref_cycle[0].plot(ax=ax, color="C1", label="EchemDB ref vs RHE")
 
-except Exception as e:
-    print(f"[Warning] Could not load or plot latest EchemDB ref: {e}")
-    raise e
+EXAMPLES = {"measured_cv": load_measured_cv, "reference_cv": load_reference_cv}
 
-# fetch an older reference (v0.4.1) and overlay, should be the same
-# try:
-#     ref_cycle_old = Measurement.read(ref_id, reader="echemdb", version="0.4.1").as_cv()
-#
-#     # calibrate and plot
-#     ref_cycle_old.calibrate_RE(RE_vs_RHE=0.7)  # shift potential by +0.7 V
-#     ref_cycle_old.plot(ax=ax, color="C2", label="EchemDB ref (v0.4.1) vs RHE")
-#
-# except Exception as e:
-#     print(f"[Warning] Could not load v0.4.1 ref: {e}")
 
-# Finalize plot
-ax.set_xlabel("Potential vs. [some ref. electrode] (V)")
-ax.set_ylabel("Current density (A/m²)")
-ax.legend(loc="best")
-ax.grid(True)
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    if not show:
+        return results
 
-plt.tight_layout()
-plt.show()
+    fig, ax = plt.subplots(figsize=(6, 4))
+    results["measured_cv"][2].plot(ax=ax, color="C0", label="Measured cycle #3")
+    results["reference_cv"].plot(ax=ax, color="C2", label="EchemDB ref vs RHE")
+
+    ax.set_xlabel("Potential vs. RHE (V)")
+    ax.set_ylabel("Current density (A/m²)")
+    ax.legend(loc="best")
+    ax.grid(True)
+    plt.tight_layout()
+    plt.show()
+    return results
+
+
+if __name__ == "__main__":
+    results = main()

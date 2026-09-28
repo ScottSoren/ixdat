@@ -1,11 +1,35 @@
-"""For use in development of the ixdat .csv reader (and exporter)."""
+"""Demo of the ixdat .csv reader and exporter.
+
+Reads a biologic file from the repository's ``test_data/``, exports it as an
+ixdat .csv and reads it back. The tutorial loader reads a .csv written by ixdat
+v0.1 from GitHub, so it requires an internet connection.
+"""
+
+from matplotlib import pyplot as plt
 
 from ixdat import Measurement
+from ixdat.demos import get_test_data_dir
 
-if False:  # test back-compatability with the ixdat v0p1 online on the tutorials page
-    meas = Measurement.read_url(
-        "https://raw.githubusercontent.com/ixdat/tutorials/"
-        + "ixdat_v0p1/loading_appending_and_saving/co_strip.csv",
+TUTORIALS_URL = "https://raw.githubusercontent.com/ixdat/tutorials/"
+
+
+def load_cv(data_dir=None):
+    """Return a calibrated CyclicVoltammogram read from a biologic .mpt file."""
+    root = data_dir or get_test_data_dir()
+    meas = Measurement.read(root / "biologic/Pt_poly_cv_CUT.mpt", reader="biologic")
+    meas.calibrate_RE(0.01)
+    meas.correct_ohmic_drop(R_Ohm=100)
+    meas.normalize_current(0.196)
+    return meas.as_cv()
+
+
+def load_tutorial_v0p1(data_dir=None):
+    """Return an ECMeasurement read from an ixdat v0.1 .csv on the tutorials page.
+
+    `data_dir` is not used. It is there to match the other loaders.
+    """
+    return Measurement.read_url(
+        TUTORIALS_URL + "ixdat_v0p1/loading_appending_and_saving/co_strip.csv",
         reader="ixdat",
         aliases={
             "t": ["time/s"],
@@ -13,29 +37,24 @@ if False:  # test back-compatability with the ixdat v0p1 online on the tutorials
             "raw_potential": ["raw potential / [V]"],
         },
     )
-    meas.plot_measurement()
-elif False:  # test with the ixdat v0p2 version online on the tutorials page
-    meas = Measurement.read_url(
-        "https://raw.githubusercontent.com/ixdat/tutorials/"
-        + "main/electrochemistry/data/co_strip.csv",
-        reader="ixdat",
-    )
-    meas.plot_measurement()
 
-else:
-    meas = Measurement.read(
-        "../../test_data/biologic/Pt_poly_cv_CUT.mpt", reader="biologic"
-    )
-    meas.calibrate_RE(0.01)
 
-    meas.correct_ohmic_drop(R_Ohm=100)
+EXAMPLES = {
+    "cv": load_cv,
+    "tutorial_v0p1": load_tutorial_v0p1,
+}
 
-    meas.normalize_current(0.196)
 
-    cv = meas.as_cv()
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    results["cv"].export("test.csv")
+    results["reloaded"] = Measurement.read("test.csv", reader="ixdat")
+    if show:
+        results["reloaded"].plot()
+        results["tutorial_v0p1"].plot_measurement()
+        plt.show()
+    return results
 
-    cv.export("test.csv")
 
-    meas_loaded = Measurement.read("test.csv", reader="ixdat")
-
-    meas_loaded.plot()
+if __name__ == "__main__":
+    results = main()

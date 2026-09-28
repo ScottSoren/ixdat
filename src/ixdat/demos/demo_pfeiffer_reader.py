@@ -1,20 +1,36 @@
-"""For use in development of the pfeiffer reader. Requires access to sample data."""
+"""Demo of the Pfeiffer reader. Requires the demo data."""
 
-from tools_for_demos import DEMO_DATA_DIR
+from matplotlib import pyplot as plt
+
 from ixdat import Measurement
+from ixdat.demos import get_demo_data_dir
 
-path_to_file = (
-    DEMO_DATA_DIR
-    / "pfeiffer"
-    / "MID_air, Position 1, RGA PrismaPro 200 44526001, 003-02-2021 17'41'12 - Bin.dat"
-)
 
-meas = Measurement.read(path_to_file, reader="pfeiffer")
+def load_air_mid(data_dir=None):
+    """Return an MSMeasurement of air read from a Pfeiffer MID .dat file."""
+    root = data_dir or get_demo_data_dir()
+    return Measurement.read(
+        root
+        / "pfeiffer"
+        / "MID_air, Position 1, RGA PrismaPro 200 44526001, 003-02-2021 17'41'12 - Bin.dat",  # noqa: E501
+        reader="pfeiffer",
+    )
 
-meas.set_bg(tspan_bg=[180, 200])
 
-meas.plot_measurement(logplot=False)
+EXAMPLES = {"air_mid": load_air_mid}
 
-meas.reset_bg()
 
-meas.plot_measurement(logplot=False)
+def main(show=True):
+    results = {name: load() for name, load in EXAMPLES.items()}
+    meas = results["air_mid"]
+    if show:
+        meas.set_bg(tspan_bg=[180, 200])
+        meas.plot_measurement(logplot=False)
+        meas.reset_bg()
+        meas.plot_measurement(logplot=False)
+        plt.show()
+    return results
+
+
+if __name__ == "__main__":
+    results = main()
