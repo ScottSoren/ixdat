@@ -149,5 +149,5 @@ Development scripts
 For developers:
 
 The basics of importing and plotting from each reader are demonstrated in
-the **development_scripts/reader_demonstrators** folder of the repository:
-https://github.com/ixdat/ixdat/tree/main/development_scripts/reader_demonstrators/
+the ``ixdat.demos`` package, in the **src/ixdat/demos** folder of the repository:
+https://github.com/ixdat/ixdat/tree/main/src/ixdat/demos/

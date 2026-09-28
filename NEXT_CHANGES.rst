@@ -24,8 +24,8 @@ development_scripts
   ``from ixdat.demos.demo_autolab_reader import load_single_file``.
   ``get_demo_data_dir()`` returns the demo data folder, given by the environment
   variable ``IXDAT_DEMO_DATA_DIR`` or ``demo_data/`` in the repository root.
-  ``development_scripts/reader_demonstrators/save_all_demo_data_in_sqlite.py`` saves
-  every demo example in an SQLite file and shows its tables in a browser.
+  ``development_scripts/save_all_demo_data_in_sqlite.py`` saves every
+  demo example in an SQLite file and shows its tables in a browser.
   `PR #212 <https://github.com/ixdat/ixdat/pull/212>`_
 
 readers
