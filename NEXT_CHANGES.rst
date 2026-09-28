@@ -44,3 +44,12 @@ techniques
   returns an ``ECMSCyclicVoltammogram`` with the EC and MS data and leaves out the mass
   spectra. It raised a ``TechniqueError`` before.
   `PR #212 <https://github.com/ixdat/ixdat/pull/212>`_
+
+spectra
+^^^^^^^
+
+- Indexing a ``SpectrumSeries`` whose technique is registered to a ``SpectrumSeries``
+  class, e.g. ``meas[1]`` on a zilien MS measurement with mass scans, returns a
+  ``Spectrum`` again. Since the ``Spectrum.from_dict`` added in 0.4.0 it returned a
+  broken ``SpectrumSeries`` which could not be plotted.
+  `PR #212 <https://github.com/ixdat/ixdat/pull/212>`_

@@ -727,7 +727,9 @@ class SpectrumSeries(Spectrum):
             spectrum_as_dict["tstamp"] = self.tstamp + self.t[key]
             if self.durations is not None and len(self.durations) > 0:
                 spectrum_as_dict["duration"] = self.durations[key]
-            return cls.from_dict(spectrum_as_dict)
+            # `cls` is chosen above. Spectrum.from_dict would pick a class from the
+            # series' technique again and could return a SpectrumSeries.
+            return cls(**spectrum_as_dict)
 
         elif isinstance(key, slice):
             # Convert the slice to a list of integers, get the spectra with the code
