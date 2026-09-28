@@ -1,6 +1,6 @@
 """Save the examples of all the reader demos in an SQLite file and view its tables.
 
-Runs every loader in the ``EXAMPLES`` of every module in ``ixdat.demos``, saves the
+Runs every loader in the ``EXAMPLES`` of every demo module in ``ixdat.demos``, saves the
 returned objects, and prints the examples which could not be loaded or saved.
 """
 
@@ -20,10 +20,10 @@ if sqlite_file.exists():
 change_database("sqlite", db_path=sqlite_file)
 
 failures = {}
-for module_info in pkgutil.iter_modules(ixdat.demos.__path__):
-    module = importlib.import_module("ixdat.demos." + module_info.name)
+for module_info in pkgutil.walk_packages(ixdat.demos.__path__, "ixdat.demos."):
+    module = importlib.import_module(module_info.name)
     for name, load in getattr(module, "EXAMPLES", {}).items():
-        key = f"{module_info.name}.{name}"
+        key = f"{module_info.name.split('.', 2)[-1]}.{name}"
         try:
             loaded = load()
             for obj in loaded if isinstance(loaded, list) else [loaded]:
