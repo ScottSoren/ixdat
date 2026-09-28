@@ -28,3 +28,19 @@ development_scripts
   ``development_scripts/save_all_demo_data_in_sqlite.py`` saves every demo example
   in an SQLite file and shows its tables in a browser.
   `PR #212 <https://github.com/ixdat/ixdat/pull/212>`_
+
+plotters
+^^^^^^^^
+
+- The plotters get colormaps with ``plt.get_cmap``. Matplotlib 3.9 removed
+  ``mpl.cm.get_cmap``, which broke waterfall plots, colorbars, ``plot_cycles`` and the
+  SEC wavelength plots.
+  `PR #212 <https://github.com/ixdat/ixdat/pull/212>`_
+
+techniques
+^^^^^^^^^^
+
+- ``as_cv()`` of an ``ECMSSpectroMeasurement``, e.g. a zilien file with mass scans,
+  returns an ``ECMSCyclicVoltammogram`` with the EC and MS data and leaves out the mass
+  spectra. It raised a ``TechniqueError`` before.
+  `PR #212 <https://github.com/ixdat/ixdat/pull/212>`_
