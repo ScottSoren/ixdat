@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from ixdat import Measurement
 from ixdat.demos import get_test_data_dir
 
-REF_ID = "briega-martos_2021_cation_48_f1Cs_black"
+REF_ID = "briega-martos_2021_cation_48_f1cs_black"
 
 
 def load_measured_cv(data_dir=None):
