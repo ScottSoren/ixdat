@@ -1,5 +1,6 @@
-"""Find the demo data and view the tables of an SQLite database in a browser."""
+"""Get the demo data and view the tables of an SQLite database in a browser."""
 
+import configparser
 import html
 import os
 import sqlite3
@@ -8,28 +9,83 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs
 
+from ..tools import get_default_cache_dir
+
 REPO_DIR = Path(__file__).parent.parent.parent.parent
 DEMO_DATA_ENV_VAR = "IXDAT_DEMO_DATA_DIR"
+DEMO_DATA_CONFIG = Path(__file__).parent / "demo_data.ini"
+
+
+def read_archive_config():
+    """Return the [archive] section of demo_data.ini as a dict."""
+    config = configparser.ConfigParser()
+    config.read(DEMO_DATA_CONFIG)
+    return dict(config["archive"])
+
+
+def get_downloaded_data_dir(cache_dir=None):
+    """Return where download_demo_data() puts the demo data, as a Path.
+
+    Args:
+        cache_dir (str or Path): The folder to download into. Defaults to the
+            ``demo_data`` folder in ixdat's cache folder.
+    """
+    archive = read_archive_config()
+    cache_dir = Path(cache_dir or get_default_cache_dir("ixdat") / "demo_data")
+    return cache_dir / f"ixdat-demo-data-{archive['version']}" / archive["folder"]
+
+
+def download_demo_data(cache_dir=None):
+    """Download and unzip the demo data archive given in demo_data.ini.
+
+    This requires the `pooch` package. Pooch checks the archive against its sha256
+    checksum and skips the download if the archive is already there.
+
+    Args:
+        cache_dir (str or Path): The folder to download into. Defaults to the
+            ``demo_data`` folder in ixdat's cache folder.
+
+    Returns:
+        Path: the folder with the demo data
+    """
+    import pooch  # not a requirement of ixdat, so we import it here.
+
+    archive = read_archive_config()
+    cache_dir = Path(cache_dir or get_default_cache_dir("ixdat") / "demo_data")
+    name = f"ixdat-demo-data-{archive['version']}"
+    pooch.retrieve(
+        url=archive["url"],
+        known_hash="sha256:" + archive["sha256"],
+        fname=name + ".zip",
+        path=cache_dir,
+        processor=pooch.Unzip(extract_dir=name),
+        progressbar=False,
+    )
+    return get_downloaded_data_dir(cache_dir)
 
 
 def get_demo_data_dir(data_dir=None):
     """Return the folder with the demo data used by the demos, as a Path.
 
     Args:
-        data_dir (str or Path): The folder to use. By default, the folder is given by
-            the environment variable IXDAT_DEMO_DATA_DIR, or is ``demo_data/`` in the
-            root of the ixdat repository.
+        data_dir (str or Path): The folder to use. By default, the first of these
+            which is set or exists: the environment variable IXDAT_DEMO_DATA_DIR,
+            ``demo_data/`` in the root of the ixdat repository, and the folder made
+            by :func:`download_demo_data`.
 
     Raises:
         FileNotFoundError: if the folder does not exist.
     """
-    data_dir = Path(
-        data_dir or os.environ.get(DEMO_DATA_ENV_VAR, REPO_DIR / "demo_data")
-    )
+    if not data_dir:
+        data_dir = os.environ.get(DEMO_DATA_ENV_VAR)
+    if not data_dir and (REPO_DIR / "demo_data").is_dir():
+        data_dir = REPO_DIR / "demo_data"
+    data_dir = Path(data_dir or get_downloaded_data_dir())
     if not data_dir.is_dir():
         raise FileNotFoundError(
-            f"No demo data found at {data_dir}. Put the demo data there, or set "
-            f"the environment variable {DEMO_DATA_ENV_VAR} to the demo data folder."
+            f"No demo data found at {data_dir}. Download it with "
+            "`python -m ixdat.demos.download` (requires `pip install pooch`), or set "
+            f"the environment variable {DEMO_DATA_ENV_VAR} to a demo data folder."
         )
     return data_dir
 

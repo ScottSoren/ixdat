@@ -23,8 +23,11 @@ development_scripts
   ``main(show=True)`` which plots the results and returns them as a dictionary. Other
   scripts import the loaders, e.g.
   ``from ixdat.demos.readers.demo_autolab_reader import load_single_file``.
-  ``get_demo_data_dir()`` returns the demo data folder, given by the environment
-  variable ``IXDAT_DEMO_DATA_DIR`` or ``demo_data/`` in the repository root.
+  The demo data is an archive on ERDA, given in ``ixdat/demos/demo_data.ini``.
+  ``python -m ixdat.demos.download`` downloads it with ``pooch``, checks its sha256
+  checksum and unzips it in ixdat's cache folder. ``get_demo_data_dir()`` returns the
+  demo data folder: the environment variable ``IXDAT_DEMO_DATA_DIR``, else
+  ``demo_data/`` in the repository root, else the downloaded folder.
   ``development_scripts/save_all_demo_data_in_sqlite.py`` saves every demo example
   in an SQLite file and shows its tables in a browser.
   `PR #212 <https://github.com/ixdat/ixdat/pull/212>`_
