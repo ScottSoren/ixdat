@@ -60,12 +60,9 @@ def main(show=True):
         ecms.ec_plotter.plot_vs_potential()
         ecms.ms_plotter.plot_measurement()
 
-        if False:
-            # FIXME: Measurement.__init__() got an unexpected keyword argument
-            #  'spectrum_id'
-            ecms_cv = ecms.as_cv()
-            ecms_cv.ec_plotter.plot_vs_potential()
-            ecms_cv.plot()
+        ecms_cv = ecms.as_cv()
+        ecms_cv.ec_plotter.plot_vs_potential()
+        ecms_cv.plot()
         plt.show()
     return results
 
