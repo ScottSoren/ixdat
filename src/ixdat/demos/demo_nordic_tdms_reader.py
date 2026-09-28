@@ -33,9 +33,7 @@ def main(show=True):
     if show:
         results["single_file"].plot()
         results["cv"].plot()
-        if False:
-            # FIXME AttributeError: module 'matplotlib.cm' has no attribute 'get_cmap'
-            results["cv"][15:30].plot_cycles()
+        results["cv"][15:30].plot_cycles()
         plt.show()
     return results
 

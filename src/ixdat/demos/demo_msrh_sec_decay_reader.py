@@ -44,10 +44,8 @@ def main(show=True):
         make_colorbar=False,
     )
 
-    if False:
-        # FIXME: AttributeError: module 'matplotlib.cm' has no attribute 'get_cmap'
-        sec_meas.plot_wavelengths(wavelengths=["w500", "w600", "w700", "w800"])
-        sec_meas.plot_waterfall()
+    sec_meas.plot_wavelengths(wavelengths=["w500", "w600", "w700", "w800"])
+    sec_meas.plot_waterfall()
 
     ax = sec_meas.get_spectrum(t=5).plot(color="k", label="resting")  # before pulse
     sec_meas.get_spectrum(t=20).plot(color="r", label="working", ax=ax)  # in pulse

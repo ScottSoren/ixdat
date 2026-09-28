@@ -56,11 +56,9 @@ def main(show=True):
         sec_reloaded.continuous = False
         sec_reloaded.plot_vs_potential(cmap_name="jet")
 
-        if False:
-            # FIXME: AttributeError: module 'matplotlib.cm' has no attribute 'get_cmap'
-            sec_meas.plot_measurement(V_ref=0.4, cmap_name="jet", make_colorbar=True)
-            ax = sec_meas.plot_waterfall(V_ref=0.4, cmap_name="jet", make_colorbar=True)
-            ax.get_figure().savefig("sec_waterfall.png")
+        sec_meas.plot_measurement(V_ref=0.4, cmap_name="jet", make_colorbar=True)
+        ax = sec_meas.plot_waterfall(V_ref=0.4, cmap_name="jet", make_colorbar=True)
+        ax.get_figure().savefig("sec_waterfall.png")
 
         sec_meas.plot_vs_potential(V_ref=0.66, cmap_name="jet", make_colorbar=False)
         sec_meas.plot_vs_potential(
@@ -82,12 +80,10 @@ def main(show=True):
         )
         ax.legend()
 
-        if False:
-            # FIXME: AttributeError: module 'matplotlib.cm' has no attribute 'get_cmap'
-            axes = sec_meas.plot_wavelengths_vs_potential(
-                wavelengths=["w460", "w600", "w850"]
-            )
-            axes[0].set_ylabel("intense!")
+        axes = sec_meas.plot_wavelengths_vs_potential(
+            wavelengths=["w460", "w600", "w850"]
+        )
+        axes[0].set_ylabel("intense!")
         plt.show()
     return results
 

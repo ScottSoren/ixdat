@@ -45,9 +45,7 @@ def main(show=True):
     ftir = results["ftir"]
 
     ftir.heat_plot()
-    if False:
-        # FIXME: AttributeError: module 'matplotlib.cm' has no attribute 'get_cmap'
-        ftir.plot_waterfall()
+    ftir.plot_waterfall()
     ftir.plot(  # stacked spectra plot
         dt=1000,
         xspan=[1000, 1500],
