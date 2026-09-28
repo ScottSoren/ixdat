@@ -11,7 +11,7 @@ from ixdat.demos import get_demo_data_dir
 
 def load_tpms(data_dir=None):
     """Return a reactor Measurement of pressure and temperature from an ixdat .csv."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Measurement.read(
         root / "cinfdata/Krabbe/baratron_temp_measurement.txt.csv",
         reader="ixdat",

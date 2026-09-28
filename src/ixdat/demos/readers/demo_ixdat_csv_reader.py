@@ -15,7 +15,7 @@ TUTORIALS_URL = "https://raw.githubusercontent.com/ixdat/tutorials/"
 
 def load_cv(data_dir=None):
     """Return a calibrated CyclicVoltammogram read from a biologic .mpt file."""
-    root = data_dir or get_test_data_dir()
+    root = get_test_data_dir(data_dir)
     meas = Measurement.read(root / "biologic/Pt_poly_cv_CUT.mpt", reader="biologic")
     meas.calibrate_RE(0.01)
     meas.correct_ohmic_drop(R_Ohm=100)

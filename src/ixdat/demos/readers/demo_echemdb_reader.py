@@ -17,7 +17,7 @@ REF_ID = "briega-martos_2021_cation_48_f1cs_black"
 
 def load_measured_cv(data_dir=None):
     """Return a CyclicVoltammogram read from a biologic .mpt file."""
-    root = data_dir or get_test_data_dir()
+    root = get_test_data_dir(data_dir)
     return Measurement.read(root / "biologic/Pt_poly_cv.mpt", reader="biologic").as_cv()
 
 

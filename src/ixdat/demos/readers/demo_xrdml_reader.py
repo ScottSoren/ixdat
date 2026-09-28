@@ -8,7 +8,7 @@ from ixdat.demos import get_demo_data_dir
 
 def load_gi_xrd(data_dir=None):
     """Return a grazing-incidence XRD Spectrum read from an .xrdml file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Spectrum.read(
         root / "xrdml/GI-XRD Path 2_1 omega 0p5 step 10s.xrdml", reader="xrdml"
     )

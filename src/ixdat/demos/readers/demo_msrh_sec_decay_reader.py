@@ -11,7 +11,7 @@ from ixdat.demos import get_demo_data_dir
 
 def load_sec_decay(data_dir=None):
     """Return a calibrated SpectroECMeasurement of a potential pulse and decay."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     sec_meas = Measurement.read(
         # root / "sec/decay/PDtest-1.35-1OSP-SP.csv",
         root / "sec/decay/PDtest-1.33-1OSP-SP.csv",

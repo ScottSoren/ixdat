@@ -15,13 +15,13 @@ SPEC_NAME = (
 
 def load_spectrum(data_dir=None):
     """Return a mass Spectrum read from a single zilien mass scan file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Spectrum.read(root / FOLDER / SPEC_NAME, reader="zilien")
 
 
 def load_ms_with_spectra(data_dir=None):
     """Return an MS measurement which includes the mass scans as spectra."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Measurement.read(
         root / FOLDER / MEAS_NAME,
         reader="zilien",
@@ -34,7 +34,7 @@ def load_ms_with_spectra(data_dir=None):
 
 def load_ms_no_spectra(data_dir=None):
     """Return an MS measurement which leaves out the mass scans."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Measurement.read(
         root / FOLDER / MEAS_NAME,
         reader="zilien",

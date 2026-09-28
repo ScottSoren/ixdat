@@ -13,13 +13,13 @@ FOLDER = "cinfdata/Krabbe"
 
 def load_spectra(data_dir=None):
     """Return a SpectrumSeries of mass spectra read from an ixdat .txt export."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Spectrum.read(root / FOLDER / "spectrumseries_mass_spec.txt", reader="ixdat")
 
 
 def load_reactor(data_dir=None):
     """Return a reactor Measurement of pressure, temperature and mass signals."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Measurement.read(
         root / FOLDER / "masstime.csv",
         reader="ixdat",

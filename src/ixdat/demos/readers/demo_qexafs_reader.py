@@ -10,7 +10,7 @@ FOLDER = "qexafs/constant potential"
 
 def load_xas(data_dir=None):
     """Return an XAS Spectrum read from a single qexafs .dat file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Spectrum.read(
         root / FOLDER / "540117_IrO2_crys_0.60V_1.dat", reader="qexafs", technique="XAS"
     )
@@ -18,13 +18,13 @@ def load_xas(data_dir=None):
 
 def load_multi_spec(data_dir=None):
     """Return a MultiSpectrum with all the columns of a single qexafs .dat file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Spectrum.read(root / FOLDER / "540117_IrO2_crys_0.60V_1.dat", reader="qexafs")
 
 
 def load_xas_series(data_dir=None):
     """Return an XAS SpectrumSeries read from a set of qexafs .dat files."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Spectrum.read_set(
         part=root / FOLDER / "IrO2_crys", suffix=".dat", reader="qexafs", technique="XAS"
     )
@@ -32,7 +32,7 @@ def load_xas_series(data_dir=None):
 
 def load_ec(data_dir=None):
     """Return an ECMeasurement read from a biologic .mpt file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Measurement.read(root / FOLDER / "IrO2_CA_0p60_C02.mpt", reader="biologic")
 
 

@@ -23,13 +23,13 @@ PULSE_INF = 100
 
 def load_o2_pulses(data_dir=None):
     """Return an MSMeasurement with a series of O2 pulses in a regular cell."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Measurement.read(root / "deconvolution/O2_pulses.csv", reader="ixdat")
 
 
 def load_ca_dark(data_dir=None):
     """Return an ECMSMeasurement of a chronoamperometry on hematite in the dark."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     meas = Measurement.read(
         root / "deconvolution/to_deconvolute_data.csv", reader="ixdat"
     )

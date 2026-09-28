@@ -11,7 +11,7 @@ from ixdat.demos import get_demo_data_dir
 
 def load_sec(data_dir=None):
     """Return a calibrated SpectroECMeasurement read from MSRH SEC files."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     sec_meas = Measurement.read(
         root / "sec/test-7SEC.csv",
         path_to_ref_spec_file=root / "sec/WL.csv",

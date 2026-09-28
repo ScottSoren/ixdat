@@ -8,7 +8,7 @@ from ixdat.demos import get_demo_data_dir
 
 def read_mpr_folder(folder, data_dir=None):
     """Return an ECMeasurement combining all the .mpr files in a biologic folder."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     combined_meas = None
     for file in sorted((root / "biologic" / folder).iterdir()):
         if not file.suffix == ".mpr":

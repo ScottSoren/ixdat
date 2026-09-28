@@ -8,7 +8,7 @@ from ixdat.demos import get_demo_data_dir
 
 def load_single_file(data_dir=None):
     """Return an ECMeasurement read from a single autolab test file."""
-    path_to_file = (data_dir or get_demo_data_dir()) / "autolab/autolab_test_file.txt"
+    path_to_file = get_demo_data_dir(data_dir) / "autolab/autolab_test_file.txt"
     # The file has no timestamp. Without `tstamp`, the reader prompts for one.
     return Measurement.read(
         path_to_file, reader="autolab", tstamp=path_to_file.stat().st_mtime

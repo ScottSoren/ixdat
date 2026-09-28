@@ -12,16 +12,20 @@ REPO_DIR = Path(__file__).parent.parent.parent.parent
 DEMO_DATA_ENV_VAR = "IXDAT_DEMO_DATA_DIR"
 
 
-def get_demo_data_dir():
-    """Return the folder with the demo data used by the reader demos.
+def get_demo_data_dir(data_dir=None):
+    """Return the folder with the demo data used by the demos, as a Path.
 
-    The folder is given by the environment variable IXDAT_DEMO_DATA_DIR, or is
-    ``demo_data/`` in the root of the ixdat repository.
+    Args:
+        data_dir (str or Path): The folder to use. By default, the folder is given by
+            the environment variable IXDAT_DEMO_DATA_DIR, or is ``demo_data/`` in the
+            root of the ixdat repository.
 
     Raises:
         FileNotFoundError: if the folder does not exist.
     """
-    data_dir = Path(os.environ.get(DEMO_DATA_ENV_VAR, REPO_DIR / "demo_data"))
+    data_dir = Path(
+        data_dir or os.environ.get(DEMO_DATA_ENV_VAR, REPO_DIR / "demo_data")
+    )
     if not data_dir.is_dir():
         raise FileNotFoundError(
             f"No demo data found at {data_dir}. Put the demo data there, or set "
@@ -30,9 +34,9 @@ def get_demo_data_dir():
     return data_dir
 
 
-def get_test_data_dir():
-    """Return the ``test_data/`` folder of the ixdat repository."""
-    return REPO_DIR / "test_data"
+def get_test_data_dir(data_dir=None):
+    """Return `data_dir`, by default the ``test_data/`` folder of the repo, as a Path."""
+    return Path(data_dir or REPO_DIR / "test_data")
 
 
 def make_page(selected, sqlite_file):

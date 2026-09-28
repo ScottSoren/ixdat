@@ -20,13 +20,13 @@ FOLDER = "bruker/MTBLS1_ADG19007u_162_10"
 
 def load_spectrum(data_dir=None):
     """Return the processed 1H NMR Spectrum of a Bruker experiment folder."""
-    root = data_dir or get_test_data_dir()
+    root = get_test_data_dir(data_dir)
     return Spectrum.read(root / FOLDER, reader="bruker")
 
 
 def load_fid(data_dir=None):
     """Return the raw FID (time-domain signal) of a Bruker experiment folder."""
-    root = data_dir or get_test_data_dir()
+    root = get_test_data_dir(data_dir)
     return Spectrum.read(root / FOLDER, reader="bruker", processed=False)
 
 

@@ -8,7 +8,7 @@ from ixdat.demos import get_demo_data_dir
 
 def load_xps_survey(data_dir=None):
     """Return an XPS survey Spectrum read from an Avantage .avg file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Spectrum.read(root / "avantage/XPS Survey.avg", reader="avantage")
 
 

@@ -13,7 +13,7 @@ FOLDER = "opus_ftir/dpt_from_Matthew/231205 DME 3% EtOH"
 
 def load_ftir(data_dir=None):
     """Return an FTIR SpectrumSeries read from a set of OPUS .dpt files."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Spectrum.read(
         root / FOLDER,
         time_first="05/12/2023 15:20:33.696 (GMT+0)",  # %d/%m/%Y %H:%M:%S.%f
@@ -24,7 +24,7 @@ def load_ftir(data_dir=None):
 
 def load_ec(data_dir=None):
     """Return an ohmic-drop corrected ECMeasurement read from biologic files."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     ec = Measurement.read_set(root / FOLDER, suffix=".mpt", reader="biologic")
     ec.calibrate(R_Ohm=30)
     return ec

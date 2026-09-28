@@ -11,7 +11,7 @@ FILE_NAME = "zilien_with_ec/2021-02-01 17_44_12.tsv"
 
 def load_ecms(data_dir=None):
     """Return an ECMSMeasurement with both the EC and MS data of a zilien file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     ecms = Measurement.read(root / FILE_NAME, reader="zilien")
     ecms.calibrate_RE(0)
     return ecms
@@ -19,19 +19,19 @@ def load_ecms(data_dir=None):
 
 def load_ms(data_dir=None):
     """Return an MSMeasurement with only the MS data of a zilien file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return MSMeasurement.read(root / FILE_NAME, reader="zilien")
 
 
 def load_ec(data_dir=None):
     """Return an ECMeasurement with only the EC data of a zilien file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return ECMeasurement.read(root / FILE_NAME, reader="zilien")
 
 
 def load_ecms_biologic(data_dir=None):
     """Return an ECMSMeasurement combining zilien MS data and biologic EC data."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     ec = Measurement.read_set(
         root / "zilien_with_ec/2021-02-01 17_44_12", reader="biologic", suffix=".mpt"
     )

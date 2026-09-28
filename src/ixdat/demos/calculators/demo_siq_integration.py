@@ -11,7 +11,7 @@ from ixdat.demos import get_demo_data_dir
 
 def load_ms(data_dir=None):
     """Return an MSMeasurement read from a zilien (version 1) .tsv file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Measurement.read(
         root / "zilien_version_1/2022-04-06 16_17_23 full set.tsv", technique="MS"
     )

@@ -8,7 +8,7 @@ from ixdat.demos import get_demo_data_dir
 
 def load_single_file(data_dir=None):
     """Return an ECMeasurement read from a single nordic .tdms file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Measurement.read(
         root / "nordic_tdms/24B07_0_Pt/CV_101448_ 1.tdms", reader="nordic"
     )
@@ -16,7 +16,7 @@ def load_single_file(data_dir=None):
 
 def load_cv(data_dir=None):
     """Return a CyclicVoltammogram combining all the .tdms files in a folder."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     meas = Measurement.read_set(
         root / "nordic_tdms/24B07_0_Pt", reader="nordic", suffix=".tdms"
     )

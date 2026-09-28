@@ -16,7 +16,7 @@ from ixdat.techniques.ms import MSCalibration
 
 def load_ecms(data_dir=None):
     """Return an ECMSMeasurement read from an ixdat .csv export."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Measurement.read(
         root / "ixdat_exports/trimarco2018_fig3_data.csv", reader="ixdat"
     )

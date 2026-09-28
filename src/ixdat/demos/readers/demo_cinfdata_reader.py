@@ -11,7 +11,7 @@ from ixdat.demos import get_demo_data_dir
 
 def load_ms(data_dir=None):
     """Return an MSMeasurement read from a cinfdata .txt file."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     return Measurement.read(
         root / "cinfdata/Trimarco2018_fig3/QMS_1.txt", reader="cinfdata"
     )
@@ -19,7 +19,7 @@ def load_ms(data_dir=None):
 
 def load_ec(data_dir=None):
     """Return a calibrated ECMeasurement read from a set of biologic files."""
-    root = data_dir or get_demo_data_dir()
+    root = get_demo_data_dir(data_dir)
     ec_meas = Measurement.read_set(
         root / "cinfdata/Trimarco2018_fig3/09_fig4", reader="biologic"
     )
