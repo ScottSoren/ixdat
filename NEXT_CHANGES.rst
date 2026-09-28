@@ -28,8 +28,9 @@ development_scripts
   checksum and unzips it in ixdat's cache folder. ``get_demo_data_dir()`` returns the
   demo data folder: the environment variable ``IXDAT_DEMO_DATA_DIR``, else
   ``demo_data/`` in the repository root, else the downloaded folder.
-  ``development_scripts/save_all_demo_data_in_sqlite.py`` saves every demo example
-  in an SQLite file and shows its tables in a browser.
+  ``development_scripts/run_all_demos.py`` runs every demo and lists the ones that
+  fail. ``development_scripts/save_all_demo_data_in_sqlite.py`` saves every demo
+  example in an SQLite file and shows its tables in a browser.
   `PR #212 <https://github.com/ixdat/ixdat/pull/212>`_
 
 plotters
